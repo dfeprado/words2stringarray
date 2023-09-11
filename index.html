@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Words 2 String Array</title>
+    <style>
+        textarea {
+            width: 100%;
+            height: 350px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Words 2 String Array</h1>
+    <p>Paste your words in the textarea below to get a string array</p>
+    <label>
+        Word separator:
+        <input type="text" id="separatorInput" value="&lt;SPACE&gt;"/>
+    </label>
+    <textarea id="inputTextArea">
+grow-0 shrink-0 items-center border-b border-zinc-400 shadow
+flex gap-2 basis-14 grow-0 overflow-clip
+lg:gap-3
+bg-white border rounded-md shadow absolute
+right-1 py-2 px-3 flex flex-col overflow-hidden
+flex items-center gap-2 rounded cursor-pointer
+hover:bg-zinc-200 transition-colors py-1 px-2
+    </textarea>
+    <label>
+        <input type="checkbox" id="noDuplicatesCheckbox"/>
+        No duplicates
+    </label>
+    <br/>
+    <label>
+        <input type="checkbox" id="prettyOutputCheckbox"/>
+        Pretty output
+    </label>
+    <br/>
+    <label>
+        <input type="checkbox" id="sortCheckbox"/>
+        Sort words (A-Z)
+    </label>
+    <br/>
+    <br/>
+    <button type="button" id="convertButton">Convert</button>
+    <p>Result:</p>
+    <textarea readonly id="outputTextArea"></textarea>
+</body>
+<script>
+    (function() {
+        const separatorInput = document.querySelector('#separatorInput');
+        const inputTextArea = document.querySelector('#inputTextArea');
+        const outputTextArea = document.querySelector('#outputTextArea');
+        const noDuplicatesCheckbox = document.querySelector('#noDuplicatesCheckbox');
+        const sortCheckbox = document.querySelector('#sortCheckbox');
+        const prettyOutputCheckbox = document.querySelector('#prettyOutputCheckbox');
+        const convertButton = document.querySelector('#convertButton');
+
+        convertButton.addEventListener('click', convertWords2StringArray);
+
+        separatorInput.addEventListener('change', () => {
+            separatorInput.value =
+                separatorInput.value.replace(' ', '<SPACE>');
+        });
+
+        function convertWords2StringArray() {
+            const separator = separatorInput.value === '<SPACE>'
+                    ? ' ' : separatorInput.value;
+            if (!separator) {
+                alert('You must define a separator');
+                return;
+            }
+            console.debug('Separator:', separator);
+
+            const input = inputTextArea.value.trim();
+            if (!input) {
+                alert('Provide an input');
+                return;
+            }
+
+            let words = input
+                .replace(/\r?\n/g, separator)
+                .split(separator);
+
+            if (noDuplicatesCheckbox.checked) {
+                words = Array.from(new Set(words));
+            }
+
+            if (sortCheckbox.checked) {
+                words.sort((a, b) => a.localeCompare(b));
+            }
+
+            words = words.map(w => `"${w}"`);
+
+            if (prettyOutputCheckbox.checked)
+                printPretty(words)
+            else
+                printRaw(words);
+        }
+
+        function printRaw(words) {
+            outputTextArea.value = '['
+                + words.join(', ')
+                + ']';
+        }
+
+        function printPretty(words) {
+            outputTextArea.value = '[\n'
+                + words.map(w => `\t${w}`).join(',\n')
+                + '\n]';
+        }
+    })()
+</script>
+</html>
